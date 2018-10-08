@@ -1,13 +1,24 @@
-FROM alpine:latest
+FROM golang:1.11
 
-ENV GOPATH /usr/local
+ARG VERSION
+
+COPY . /opt/data
+WORKDIR /opt/data
+
+RUN echo $VERSION > /opt/data/pkg/version/VERSION
+RUN make linux
+
+#########################################################################################
+
+FROM gcr.io/distroless/base
+COPY --from=0 /opt/data/build/linux/turn /usr/bin/turn
+
+WORKDIR /usr/bin
+
 ENV REALM localhost
 ENV USERS username=password
 ENV UDP_PORT 3478
 
-RUN apk --no-cache add go git musl-dev && rm -rf /var/cache/apk/*
-RUN go get github.com/cespare/reflex github.com/pions/turn
+EXPOSE 3478
 
-WORKDIR /usr/local/src/github.com/pions/turn
-ENTRYPOINT ["/usr/local/bin/reflex"]
-CMD ["-r", ".", "-s", "go", "run", "cmd/simple-turn/main.go"]
+CMD ["turn"]

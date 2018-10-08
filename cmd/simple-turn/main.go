@@ -8,6 +8,7 @@ import (
 
 	"github.com/pions/pkg/stun"
 	"github.com/pions/turn"
+	"github.com/pions/turn/pkg/version"
 )
 
 type myTurnServer struct {
@@ -46,6 +47,7 @@ func main() {
 		log.Panic(err)
 	}
 
+	log.Println(version.GetVersion())
 	turn.Start(turn.StartArguments{
 		Server:  m,
 		Realm:   realm,
