@@ -1,5 +1,6 @@
 SHELL := /bin/bash
 NAME := turn
+GCR_NAME := gcr.io/organic-spirit-217211/${NAME}
 GO := go
 REV := $(shell git rev-parse --short HEAD 2> /dev/null || echo 'unknown')
 ROOT_PACKAGE := github.com/pions/turn
@@ -39,15 +40,15 @@ linux: version
 	CGO_ENABLED=$(CGO_ENABLED) GOOS=linux GOARCH=amd64 $(GO) build $(BUILDFLAGS) -o build/linux/$(NAME) cmd/simple-turn/main.go
 
 docker-build-latest:
-	docker build . -t i0nw/turn:latest
+	docker build . -t ${GCR_NAME}:latest
 
 docker-build:
-	docker build . --build-arg VERSION=$(VERSION) -t i0nw/turn:latest
-	docker tag i0nw/turn:latest i0nw/turn:$(VERSION)
+	docker build . --build-arg VERSION=$(VERSION) -t ${GCR_NAME}:latest
+	docker tag ${GCR_NAME}:latest ${GCR_NAME}:$(VERSION)
 
 docker-push:
-	docker push i0nw/turn:latest
-	docker push i0nw/turn:$(VERSION)
+	docker push ${GCR_NAME}:latest
+	docker push ${GCR_NAME}:$(VERSION)
 
 docker: docker-build docker-push
 
